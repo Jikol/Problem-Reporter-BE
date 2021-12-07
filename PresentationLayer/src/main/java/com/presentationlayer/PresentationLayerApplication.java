@@ -1,6 +1,6 @@
 package com.presentationlayer;
 
-import com.domainlayer.DomainClass;
+import com.dataaccesslayer.Database;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PresentationLayerApplication {
     public static void main(String[] args) {
         SpringApplication.run(PresentationLayerApplication.class, args);
-        String fromDomain = DomainClass.getName();
-        System.out.println(fromDomain);
 
-        String fromData = DomainClass.getNameFromDataAccessLayer();
-        System.out.println(fromData);
+        Database db = Database.Create();
+        db.Connect();
+
+        System.out.println(db);
     }
 }
