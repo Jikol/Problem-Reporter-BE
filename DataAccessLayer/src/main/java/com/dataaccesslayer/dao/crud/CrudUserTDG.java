@@ -3,9 +3,10 @@ package com.dataaccesslayer.dao.crud;
 import com.dataaccesslayer.Database;
 import com.dataaccesslayer.entity.UserEntity;
 import org.hibernate.exception.ConstraintViolationException;
-import org.postgresql.util.PSQLException;
 
-public class UserTDG {
+import java.util.List;
+
+public class CrudUserTDG {
     private static Database db = Database.getDatabase();
 
     public boolean Insert(UserEntity userEntity) {
@@ -14,10 +15,14 @@ public class UserTDG {
             db.getSession().save(userEntity);
             db.EndTransaction();
         } catch (ConstraintViolationException ex) {
-            db.Rollback();
             System.out.println("Constraint violation raised: " + ex.getCause());
+            db.Rollback();
             return false;
         }
         return true;
+    }
+
+    public List<UserEntity> Select() {
+        return null;
     }
 }
