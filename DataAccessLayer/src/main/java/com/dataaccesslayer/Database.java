@@ -10,18 +10,8 @@ public class Database {
 
     private static Database instance = null;
     private Configuration connection;
-    private Session session;
+    private Session session = null;
     private Transaction transaction = null;
-
-    private Database() {
-        connection = new Configuration();
-        connection.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
-        connection.setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/my_db");
-        connection.setProperty("hibernate.connection.username", "postgres");
-        connection.setProperty("hibernate.connection.password", "postgres");
-        connection.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        connection.setProperty("show_sql", "true");
-    }
 
     private Database(String hostName, String port, String database, String userName, String password) {
         connection = new Configuration();
@@ -31,6 +21,7 @@ public class Database {
         connection.setProperty("hibernate.connection.password", password);
         connection.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         connection.setProperty("show_sql", "true");
+        connection.configure("hibernate.cfg.xml");
     }
 
     public static Database getDatabase() {
@@ -39,15 +30,6 @@ public class Database {
 
     public Session getSession() {
         return session;
-    }
-
-    public static Database Create() {
-        if (instance == null) {
-            instance = new Database();
-            return instance;
-        } else {
-            return instance;
-        }
     }
 
     public static Database Create(String hostName, String port, String database, String userName, String password) {
@@ -66,17 +48,21 @@ public class Database {
     }
 
     public void Connect() {
-        Create();
         try {
-            session = connection.buildSessionFactory().openSession();
+            if (session == null) {
+                session = connection.buildSessionFactory().openSession();
+            }
         } catch (SessionException ex) {
             System.out.println(ex.getCause());
         }
     }
 
-    public void Close() {
+    public void Disconnect() {
         try {
-            session.close();
+            if (session != null) {
+                session.close();
+                session = null;
+            }
         } catch (Exception ex) {
             if (ex.getCause() == null) {
                 System.out.println("Database not connected");
@@ -89,7 +75,7 @@ public class Database {
         try {
             rows = query.executeUpdate();
         } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
+            ex.printStackTrace();
             Rollback();
         }
         return rows;
@@ -103,7 +89,10 @@ public class Database {
         try {
             transaction.commit();
         } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
+            if (transaction != null) {
+                Rollback();
+            }
+            ex.printStackTrace();
         }
     }
 
@@ -113,11 +102,11 @@ public class Database {
 
     @Override
     public String toString() {
-        return """
-                Database
-                connection: %s
-                session: %s
-                transaction: %s
-                """.formatted(connection, session, transaction);
+        final StringBuffer sb = new StringBuffer("Database{");
+        sb.append("connection=").append(connection);
+        sb.append(", session=").append(session);
+        sb.append(", transaction=").append(transaction);
+        sb.append('}');
+        return sb.toString();
     }
 }

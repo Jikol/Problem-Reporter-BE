@@ -25,12 +25,6 @@
             <artifactId>DataAccessLayer</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.3.1</version>
-        </dependency>
     </dependencies>
 
 </project>
