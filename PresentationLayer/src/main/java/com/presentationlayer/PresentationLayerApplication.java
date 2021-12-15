@@ -17,17 +17,5 @@ public class PresentationLayerApplication {
 
         Database.Create("localhost", "5432", "problem_reporting",
                 "postgres", "postgres").Connect();
-
-//        UserModule userModule = new UserModule();
-//        List<UserDTO> users = new ArrayList<>();
-//        users.add(new UserDTO("email@email.com", "Jan", null));
-//        users.add(new UserDTO(null, "Karel", "Bukvice"));
-//        users.add(new UserDTO("test@testik.cz", null, null));
-//
-//        int count = 0;
-//        for (UserDTO user : users) {
-//            count = userModule.CreateUser(user);
-//        }
-//        System.out.printf("%s users have been added to database", count);
     }
 }

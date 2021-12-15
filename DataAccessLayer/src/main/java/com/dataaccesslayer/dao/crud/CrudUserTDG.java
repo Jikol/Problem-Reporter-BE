@@ -4,6 +4,7 @@ import com.dataaccesslayer.Database;
 import com.dataaccesslayer.entity.UserEntity;
 import org.hibernate.exception.ConstraintViolationException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CrudUserTDG {
@@ -23,6 +24,16 @@ public class CrudUserTDG {
     }
 
     public List<UserEntity> Select() {
-        return null;
+        List selectedUsers = new ArrayList();
+        try {
+            db.BeginTransaction();
+            selectedUsers = db.getSession().createQuery("FROM UserEntity").list();
+            db.EndTransaction();
+        } catch (Exception ex) {
+            System.out.println("Error " + ex.getCause());
+            db.Rollback();
+            return null;
+        }
+        return selectedUsers;
     }
 }
