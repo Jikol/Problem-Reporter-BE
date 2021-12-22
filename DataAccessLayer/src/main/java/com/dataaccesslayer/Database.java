@@ -21,7 +21,6 @@ public class Database {
         connection.setProperty("hibernate.connection.password", password);
         connection.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         connection.setProperty("show_sql", "true");
-        connection.configure("hibernate.cfg.xml");
     }
 
     public static Database getDatabase() {

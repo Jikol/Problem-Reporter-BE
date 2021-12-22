@@ -13,7 +13,9 @@ public class CrudUserTDG {
     public boolean Insert(UserEntity userEntity) {
         try {
             db.BeginTransaction();
-            db.getSession().save(userEntity);
+            // místo toho napsat normálně INSERT dotaz - implementace unit of work se udělá nad tímto
+            // tato třída bude implementovat Unit of work interface
+            //db.getSession().save(userEntity);
             db.EndTransaction();
         } catch (ConstraintViolationException ex) {
             System.out.println("Constraint violation raised: " + ex.getCause());
@@ -27,7 +29,7 @@ public class CrudUserTDG {
         List selectedUsers = new ArrayList();
         try {
             db.BeginTransaction();
-            selectedUsers = db.getSession().createQuery("FROM UserEntity").list();
+            //selectedUsers = db.getSession().createQuery("FROM UserEntity").list();
             db.EndTransaction();
         } catch (Exception ex) {
             System.out.println("Error " + ex.getCause());

@@ -6,16 +6,16 @@ import com.domainlayer.dto.UserDTO;
 
 import java.util.*;
 
-public class UserModule {
+public class UserTM {
     public static int userCreated = 0;
     private CrudUserTDG userDataGateway;
 
-    public int CreateUser(UserDTO user) {
+    public UserTM() {
         userDataGateway = new CrudUserTDG();
-        UserEntity userEntity = new UserEntity();
-        userEntity.setEmail(user.getEmail());
-        userEntity.setName(user.getName());
-        userEntity.setSurname(user.getSurname());
+    }
+
+    public int CreateUser(UserDTO user) {
+        UserEntity userEntity = new UserEntity(user.getEmail(), user.getName(), user.getSurname());
         if (userDataGateway.Insert(userEntity)) {
             userCreated++;
         }
@@ -23,7 +23,6 @@ public class UserModule {
     }
 
     public List<UserDTO> ListAllUsers() {
-        userDataGateway = new CrudUserTDG();
         List<UserDTO> users = new ArrayList<>();
         List<UserEntity> selectedUsers = userDataGateway.Select();
         if (selectedUsers != null) {
