@@ -1,27 +1,18 @@
-package com.domainlayer.dto;
+package com.domainlayer.dto.user;
 
-import java.io.Serializable;
-import java.util.Objects;
-
-public class UserDTO implements Serializable {
+public class UserDTO {
     private final String email;
-    private final String passwd;
     private final String name;
     private final String surname;
 
-    public UserDTO(String email, String passwd, String name, String surname) {
+    public UserDTO(String email, String name, String surname) {
         this.email = email;
-        this.passwd = passwd;
         this.name = name;
         this.surname = surname;
     }
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPasswd() {
-        return passwd;
     }
 
     public String getName() {
@@ -36,7 +27,6 @@ public class UserDTO implements Serializable {
     public String toString() {
         return "UserDTO{" +
                 "email='" + email + '\'' +
-                ", passwd='" + passwd + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 '}';

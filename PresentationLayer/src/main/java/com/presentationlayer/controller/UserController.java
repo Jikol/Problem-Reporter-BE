@@ -1,24 +1,31 @@
 package com.presentationlayer.controller;
 
 import com.domainlayer.UserTM;
-import com.domainlayer.dto.UserDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.domainlayer.dto.user.NewUserDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.json.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
-    @PostMapping("/user/register")
-    public void userRegister(@RequestParam("email") String email,
-                             @RequestParam("passwd") String passwd,
-                             @RequestParam("name") String name,
-                             @RequestParam("surname") String surname) {
+    @PostMapping("/register")
+    public ResponseEntity<String> userRegister(@RequestBody NewUserDTO user) {
         UserTM userTM = new UserTM();
-        UserDTO userDTO = new UserDTO(email, passwd, name, surname);
-        userTM.RegisterUser(userDTO);
+        Map message = userTM.RegisterUser(user);
+        JsonObjectBuilder target = Json.createObjectBuilder()
+                .add("timestamp", new Date(System.currentTimeMillis()).toString())
+                .add("status", (Integer) message.get("status"));
+        if (message.get("error") != null) {
+            target.add("errorMessage", message.get("error").toString());
+        }
+        return new ResponseEntity(target.build().toString(), HttpStatus.valueOf((Integer) message.get("status")));
     }
 }
