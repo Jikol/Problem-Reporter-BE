@@ -1,10 +1,14 @@
 package com.presentationlayer;
 
 import com.dataaccesslayer.Database;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+
+import java.security.Key;
 
 @SpringBootApplication
 public class PresentationLayerApplication {

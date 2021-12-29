@@ -5,7 +5,7 @@ public class UserDTO {
     private final String name;
     private final String surname;
 
-    public UserDTO(String email, String name, String surname) {
+    public UserDTO(final String email, final String name, final String surname) {
         this.email = email;
         this.name = name;
         this.surname = surname;

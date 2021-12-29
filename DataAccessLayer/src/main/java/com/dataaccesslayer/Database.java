@@ -2,10 +2,7 @@ package com.dataaccesslayer;
 
 import java.sql.*;
 import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Database {
     private static Database instance = null;
@@ -17,24 +14,19 @@ public class Database {
     private final String userName;
     private final String password;
 
-    private Database(String driver, String hostName, String port, String database, String userName, String password) {
+    private Database(final String driver, final String hostName, final String port,
+                     final String database, final String userName, final String password) {
         this.url = "jdbc:" + driver + "://" + hostName + ":" + port + "/" + database;
         this.userName = userName;
         this.password = password;
-
-//        connection.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
-//        connection.setProperty("hibernate.connection.url", "jdbc:postgresql://" + hostName + ":" + port + "/" + database);
-//        connection.setProperty("hibernate.connection.username", userName);
-//        connection.setProperty("hibernate.connection.password", password);
-//        connection.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-//        connection.setProperty("show_sql", "true");
     }
 
     public static Database getDatabase() {
         return instance;
     }
 
-    public static Database Create(String driver, String hostName, String port, String database, String userName, String password) {
+    public static Database Create(final String driver, final String hostName, final String port,
+                                  final String database, final String userName, final String password) {
         if (instance == null) {
             instance = new Database(driver, hostName, port, database, userName, password);
             return instance;
@@ -84,11 +76,11 @@ public class Database {
         }
     }
 
-    public void ExecuteUpdate(String query) throws SQLException {
+    public void ExecuteUpdate(final String query) throws SQLException {
         statement.executeUpdate(query);
     }
 
-    public void ExecutePreparedUpdate(String query, Map parameters) throws SQLException {
+    public void ExecutePreparedUpdate(final String query, final Map parameters) throws SQLException {
         preparedStatement = connection.prepareStatement(query);
         parameters.forEach((index, parameterEntry) -> {
             AbstractMap.SimpleEntry<Object, Object> parameter = (AbstractMap.SimpleEntry<Object, Object>) parameterEntry;
@@ -110,7 +102,7 @@ public class Database {
         preparedStatement.executeUpdate();
     }
 
-    public ResultSet ExecuteSelect(String query) {
+    public ResultSet ExecuteSelect(final String query) {
         try {
             return statement.executeQuery(query);
         } catch (SQLException ex) {
@@ -119,7 +111,7 @@ public class Database {
         }
     }
 
-    public ResultSet ExecutePreparedSelect(String query, Map parameters) throws SQLException {
+    public ResultSet ExecutePreparedSelect(final String query, final Map parameters) {
         try {
             preparedStatement = connection.prepareStatement(query);
             parameters.forEach((index, parameterEntry) -> {

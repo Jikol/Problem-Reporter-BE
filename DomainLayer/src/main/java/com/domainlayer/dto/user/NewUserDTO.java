@@ -8,7 +8,7 @@ public class NewUserDTO implements Serializable {
     private final String name;
     private final String surname;
 
-    public NewUserDTO(String email, String passwd, String name, String surname) {
+    public NewUserDTO(final String email, final String passwd, final String name, final String surname) {
         this.email = email;
         this.passwd = passwd;
         this.name = name;

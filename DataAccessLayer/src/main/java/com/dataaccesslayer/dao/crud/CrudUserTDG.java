@@ -3,11 +3,9 @@ package com.dataaccesslayer.dao.crud;
 import com.dataaccesslayer.Database;
 import com.dataaccesslayer.dao.IUnitOfWork;
 import com.dataaccesslayer.entity.UserEntity;
-import org.hibernate.ObjectDeletedException;
-import org.hibernate.exception.ConstraintViolationException;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.*;
 
 public class CrudUserTDG implements IUnitOfWork {
@@ -15,21 +13,21 @@ public class CrudUserTDG implements IUnitOfWork {
     private final Database db = Database.getDatabase();
 
     @Override
-    public void registerNew(Object entity) {
+    public void registerNew(final Object entity) {
         register((UserEntity) entity, IUnitOfWork.INSERT);
     }
 
     @Override
-    public void registerModified(Object entity) {
+    public void registerModified(final Object entity) {
         register((UserEntity) entity, IUnitOfWork.MODIFY);
     }
 
     @Override
-    public void registerDeleted(Object entity) {
+    public void registerDeleted(final Object entity) {
         register((UserEntity) entity, IUnitOfWork.DELETE);
     }
 
-    private void register(UserEntity userEntity, String operation) {
+    private void register(final UserEntity userEntity, final String operation) {
         List entitiesToPersistence = context.get(operation);
         if (entitiesToPersistence == null) {
             entitiesToPersistence = new ArrayList();
@@ -94,7 +92,7 @@ public class CrudUserTDG implements IUnitOfWork {
         return objectsInserted;
     }
 
-    private void Insert(UserEntity userEntity) throws SQLException {
+    private void Insert(final UserEntity userEntity) throws SQLException {
         String query = "INSERT INTO \"user\"(email, passwd, name, surname) VALUES (?, ?, ?, ?)";
         Map<Integer, AbstractMap.SimpleEntry<Object, Object>> parameters = new HashMap<>();
         parameters.put(1, new AbstractMap.SimpleEntry(String.class, userEntity.getEmail()));
@@ -104,18 +102,35 @@ public class CrudUserTDG implements IUnitOfWork {
         db.ExecutePreparedUpdate(query, parameters);
     }
 
-    private void Update(UserEntity userEntity) {
+    private void Update(final UserEntity userEntity) {
 
     }
 
-    private void Delete(UserEntity userEntity) {
+    private void Delete(final UserEntity userEntity) {
 
     }
 
-    public List<UserEntity> Select() {
-        List selectedUsers = new ArrayList();
-        db.ExecuteSelect("SELECT a, b, c");
-        //selectedUsers = db.getSession().createQuery("FROM UserEntity").list();
-        return selectedUsers;
+    public UserEntity selectByEmail(final String emailParam) {
+        UserEntity userEntity = null;
+        try {
+            db.BeginConnection();
+            String query = "SELECT * FROM \"user\" WHERE email LIKE ?";
+            Map<Integer, AbstractMap.SimpleEntry<Object, Object>> parameters = new HashMap<>();
+            parameters.put(1, new AbstractMap.SimpleEntry(String.class, emailParam));
+            ResultSet rs = db.ExecutePreparedSelect(query, parameters);
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String email = rs.getString("email");
+                String passwd = rs.getString("passwd");
+                String name = rs.getString("name");
+                String surname = rs.getString("surname");
+                userEntity = new UserEntity(id, email, passwd, name, surname);
+            }
+            rs.close();
+            db.EndConnection();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return userEntity;
     }
 }
