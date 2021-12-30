@@ -15,6 +15,10 @@ public class PasswordEncryption {
 
     private static byte[] salt = null;
 
+    private PasswordEncryption() {
+        throw new AssertionError();
+    }
+
     public static String GetHashedPassword(final String password) {
         SetSalt(password);
         KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, ITERATION_COUNT, KEY_LENGTH);

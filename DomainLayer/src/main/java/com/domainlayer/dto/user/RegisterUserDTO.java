@@ -2,13 +2,13 @@ package com.domainlayer.dto.user;
 
 import java.io.Serializable;
 
-public class NewUserDTO implements Serializable {
+public class RegisterUserDTO implements Serializable {
     private final String email;
     private final String passwd;
     private final String name;
     private final String surname;
 
-    public NewUserDTO(final String email, final String passwd, final String name, final String surname) {
+    public RegisterUserDTO(final String email, final String passwd, final String name, final String surname) {
         this.email = email;
         this.passwd = passwd;
         this.name = name;

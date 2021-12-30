@@ -3,16 +3,12 @@ package com.domainlayer;
 import com.dataaccesslayer.dao.crud.CrudUserTDG;
 import com.dataaccesslayer.entity.UserEntity;
 import com.domainlayer.dto.user.LoginUserDTO;
-import com.domainlayer.dto.user.NewUserDTO;
+import com.domainlayer.dto.user.RegisterUserDTO;
+import com.domainlayer.dto.user.UserDTO;
 import com.domainlayer.module.JwtToken;
 import com.domainlayer.module.PasswordEncryption;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 
-import java.security.Key;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,21 +20,21 @@ public class UserTM {
         userRegistered = 0;
     }
 
-    public Map<Object, Object> RegisterUser(final NewUserDTO newUserDTO) {
+    public Map<Object, Object> RegisterUser(final RegisterUserDTO registerUserDTO) {
         CrudUserTDG crudUserTDG = new CrudUserTDG();
         String token = null;
-        if (newUserDTO.getEmail() != null && newUserDTO.getPasswd() != null) {
-            String hashedPassword = PasswordEncryption.GetHashedPassword(newUserDTO.getPasswd());
-            crudUserTDG.registerNew(new UserEntity(newUserDTO.getEmail(), hashedPassword, newUserDTO.getName(), newUserDTO.getSurname()));
+        if (registerUserDTO.getEmail() != null && registerUserDTO.getPasswd() != null) {
+            String hashedPassword = PasswordEncryption.GetHashedPassword(registerUserDTO.getPasswd());
+            crudUserTDG.RegisterNew(new UserEntity(registerUserDTO.getEmail(), hashedPassword, registerUserDTO.getName(), registerUserDTO.getSurname()));
             try {
-                userRegistered += crudUserTDG.commit();
+                userRegistered += crudUserTDG.Commit();
             } catch (Exception ex) {
                 return Map.of(
                         "status", 409,
                         "error", ex.getLocalizedMessage()
                 );
             }
-            token = JwtToken.GenerateToken(newUserDTO.getEmail());
+            token = JwtToken.GenerateToken(registerUserDTO.getEmail());
         } else {
             return Map.of(
                     "status", 400,
@@ -47,22 +43,24 @@ public class UserTM {
         }
         return Map.of(
                 "status", 201,
+                "created", userRegistered,
                 "token", token
         );
     }
 
-    public Map<Object, Object> RegisterUsers(final List<NewUserDTO> newUserDTOS) {
+    public Map<Object, Object> RegisterUsers(final List<RegisterUserDTO> registerUserDTOS) {
         CrudUserTDG crudUserTDG = new CrudUserTDG();
         AtomicBoolean problemFound = new AtomicBoolean(false);
-        newUserDTOS.forEach(newUserDTO -> {
-            if (newUserDTO.getEmail() != null && newUserDTO.getPasswd() != null) {
-                crudUserTDG.registerNew(new UserEntity(newUserDTO.getEmail(), newUserDTO.getPasswd(), newUserDTO.getName(), newUserDTO.getSurname()));
+        registerUserDTOS.forEach(registerUserDTO -> {
+            if (registerUserDTO.getEmail() != null && registerUserDTO.getPasswd() != null) {
+                crudUserTDG.RegisterNew(new UserEntity(registerUserDTO.getEmail(), registerUserDTO.getPasswd(),
+                        registerUserDTO.getName(), registerUserDTO.getSurname()));
             } else {
                 problemFound.set(true);
             }
         });
         try {
-            userRegistered += crudUserTDG.commit();
+            userRegistered += crudUserTDG.Commit();
         } catch (Exception ex) {
             return Map.of(
                     "status", 409,
@@ -80,32 +78,45 @@ public class UserTM {
         );
     }
 
-    public void loginUser(final LoginUserDTO loginUserDTO) {
+    public Map<Object, Object> loginUser(final LoginUserDTO loginUserDTO) {
         CrudUserTDG crudUserTDG = new CrudUserTDG();
-        UserEntity userEntity = crudUserTDG.selectByEmail(loginUserDTO.getEmail());
-        if (PasswordEncryption.AuthenticatePassword(loginUserDTO.getPassword(), userEntity.getPasswd())) {
-            System.out.println("prihlasen");
+        if (loginUserDTO.getEmail() == null || loginUserDTO.getPassword() == null) {
+            return Map.of(
+                    "status", 400,
+                    "error", "Email and Password are mandatory attributes"
+            );
+        }
+        UserEntity userEntity = crudUserTDG.SelectByEmail(loginUserDTO.getEmail());
+        if (userEntity != null) {
+            if (PasswordEncryption.AuthenticatePassword(loginUserDTO.getPassword(), userEntity.getPasswd())) {
+                String token = JwtToken.GenerateToken(loginUserDTO.getEmail());
+                return Map.of(
+                        "status", 200,
+                        "token", token
+                );
+            } else {
+                return Map.of(
+                        "status", 403,
+                        "error", "Incorrect email or password"
+                );
+            }
         } else {
-            System.out.println("spatne heslo");
+            return Map.of(
+                    "status", 404,
+                    "error", "User with provided credentials does not exist"
+            );
         }
     }
 
-//    public List<NewUserDTO> ListAllUsers() {
-//        CrudUserTDG crudUserTDG = new CrudUserTDG();
-//        List<NewUserDTO> users = new ArrayList<>();
-//        List<UserEntity> selectedUsers = crudUserTDG.Select();
-//        if (selectedUsers != null) {
-//            selectedUsers.forEach(userEntity -> {
-//                NewUserDTO user = new NewUserDTO(
-//                        userEntity.getEmail(),
-//                        userEntity.getName(),
-//                        userEntity.getName(),
-//                        userEntity.getSurname());
-//                users.add(user);
-//            });
-//        }
-//        return users;
-//    }
+    public List<UserDTO> listAllUsers() {
+        CrudUserTDG crudUserTDG = new CrudUserTDG();
+        List<UserDTO> userDTOList = new ArrayList<>();
+        List<UserEntity> userEntities = crudUserTDG.SelectAll();
+        userEntities.forEach(userEntity -> {
+            userDTOList.add(new UserDTO(userEntity.getEmail(), userEntity.getName(), userEntity.getSurname()));
+        });
+        return userDTOList;
+    }
 
     public int GetRegisteredUser() {
         return userRegistered;

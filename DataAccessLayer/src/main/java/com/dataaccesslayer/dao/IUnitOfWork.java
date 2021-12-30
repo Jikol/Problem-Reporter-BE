@@ -5,8 +5,8 @@ public interface IUnitOfWork<T> {
     String DELETE = "DELETE";
     String MODIFY = "MODIFY";
 
-    void registerNew(T entity);
-    void registerModified(T entity);
-    void registerDeleted(T entity);
-    int commit() throws Exception;
+    void RegisterNew(T entity);
+    void RegisterModified(T entity);
+    void RegisterDeleted(T entity);
+    int Commit() throws Exception;
 }

@@ -2,6 +2,7 @@ package com.dataaccesslayer.dao.crud;
 
 import com.dataaccesslayer.Database;
 import com.dataaccesslayer.dao.IUnitOfWork;
+import com.dataaccesslayer.dao.mapper.UserMapper;
 import com.dataaccesslayer.entity.UserEntity;
 
 import java.sql.ResultSet;
@@ -13,21 +14,21 @@ public class CrudUserTDG implements IUnitOfWork {
     private final Database db = Database.getDatabase();
 
     @Override
-    public void registerNew(final Object entity) {
-        register((UserEntity) entity, IUnitOfWork.INSERT);
+    public void RegisterNew(final Object entity) {
+        Register((UserEntity) entity, IUnitOfWork.INSERT);
     }
 
     @Override
-    public void registerModified(final Object entity) {
-        register((UserEntity) entity, IUnitOfWork.MODIFY);
+    public void RegisterModified(final Object entity) {
+        Register((UserEntity) entity, IUnitOfWork.MODIFY);
     }
 
     @Override
-    public void registerDeleted(final Object entity) {
-        register((UserEntity) entity, IUnitOfWork.DELETE);
+    public void RegisterDeleted(final Object entity) {
+        Register((UserEntity) entity, IUnitOfWork.DELETE);
     }
 
-    private void register(final UserEntity userEntity, final String operation) {
+    private void Register(final UserEntity userEntity, final String operation) {
         List entitiesToPersistence = context.get(operation);
         if (entitiesToPersistence == null) {
             entitiesToPersistence = new ArrayList();
@@ -37,7 +38,7 @@ public class CrudUserTDG implements IUnitOfWork {
     }
 
     @Override
-    public int commit() throws Exception {
+    public int Commit() throws Exception {
         int executedStatements = 0;
         if (context == null || context.size() == 0) {
             return executedStatements;
@@ -45,13 +46,13 @@ public class CrudUserTDG implements IUnitOfWork {
         try {
             db.BeginConnection();
             if (context.containsKey(IUnitOfWork.INSERT)) {
-                executedStatements += commitInsert();
+                executedStatements += CommitInsert();
             }
             if (context.containsKey(IUnitOfWork.MODIFY)) {
-                executedStatements += commitModify();
+                executedStatements += CommitModify();
             }
             if (context.containsKey(IUnitOfWork.DELETE)) {
-                executedStatements += commitDelete();
+                executedStatements += CommitDelete();
             }
             db.Commit();
             db.EndConnection();
@@ -62,7 +63,7 @@ public class CrudUserTDG implements IUnitOfWork {
         return executedStatements;
     }
 
-    private int commitInsert() throws SQLException {
+    private int CommitInsert() throws SQLException {
         List objectsToBePersisted = context.get(IUnitOfWork.INSERT);
         int objectsInserted = 0;
         for (Object userEntity : objectsToBePersisted) {
@@ -72,7 +73,7 @@ public class CrudUserTDG implements IUnitOfWork {
         return objectsInserted;
     }
 
-    private int commitModify() {
+    private int CommitModify() {
         List objectsToBePersisted = context.get(IUnitOfWork.MODIFY);
         int objectsInserted = 0;
         for (Object userEntity : objectsToBePersisted) {
@@ -82,7 +83,7 @@ public class CrudUserTDG implements IUnitOfWork {
         return objectsInserted;
     }
 
-    private int commitDelete() {
+    private int CommitDelete() {
         List objectsToBePersisted = context.get(IUnitOfWork.DELETE);
         int objectsInserted = 0;
         for (Object userEntity : objectsToBePersisted) {
@@ -94,7 +95,7 @@ public class CrudUserTDG implements IUnitOfWork {
 
     private void Insert(final UserEntity userEntity) throws SQLException {
         String query = "INSERT INTO \"user\"(email, passwd, name, surname) VALUES (?, ?, ?, ?)";
-        Map<Integer, AbstractMap.SimpleEntry<Object, Object>> parameters = new HashMap<>();
+        var parameters = new HashMap<>();
         parameters.put(1, new AbstractMap.SimpleEntry(String.class, userEntity.getEmail()));
         parameters.put(2, new AbstractMap.SimpleEntry(String.class, userEntity.getPasswd()));
         parameters.put(3, new AbstractMap.SimpleEntry(String.class, userEntity.getName()));
@@ -110,27 +111,23 @@ public class CrudUserTDG implements IUnitOfWork {
 
     }
 
-    public UserEntity selectByEmail(final String emailParam) {
-        UserEntity userEntity = null;
-        try {
-            db.BeginConnection();
-            String query = "SELECT * FROM \"user\" WHERE email LIKE ?";
-            Map<Integer, AbstractMap.SimpleEntry<Object, Object>> parameters = new HashMap<>();
-            parameters.put(1, new AbstractMap.SimpleEntry(String.class, emailParam));
-            ResultSet rs = db.ExecutePreparedSelect(query, parameters);
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String email = rs.getString("email");
-                String passwd = rs.getString("passwd");
-                String name = rs.getString("name");
-                String surname = rs.getString("surname");
-                userEntity = new UserEntity(id, email, passwd, name, surname);
-            }
-            rs.close();
-            db.EndConnection();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+    public UserEntity SelectByEmail(final String emailParam) {
+        db.BeginConnection();
+        String query = "SELECT * FROM \"user\" WHERE email LIKE ?";
+        var parameters = new HashMap<>();
+        parameters.put(1, new AbstractMap.SimpleEntry(String.class, emailParam));
+        UserMapper userMapper = new UserMapper();
+        UserEntity userEntity = userMapper.mapResultSingle(db.ExecutePreparedSelect(query, parameters));
+        db.EndConnection();
         return userEntity;
+    }
+
+    public List<UserEntity> SelectAll() {
+        db.BeginConnection();
+        String query = "SELECT * FROM \"user\"";
+        UserMapper userMapper = new UserMapper();
+        List<UserEntity> userEntities = userMapper.mapResultSet(db.ExecuteSelect(query));
+        db.EndConnection();
+        return userEntities;
     }
 }

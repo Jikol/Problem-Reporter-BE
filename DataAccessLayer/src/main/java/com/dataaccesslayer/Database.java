@@ -1,7 +1,10 @@
 package com.dataaccesslayer;
 
+import com.dataaccesslayer.entity.UserEntity;
+
 import java.sql.*;
 import java.util.AbstractMap;
+import java.util.List;
 import java.util.Map;
 
 public class Database {
@@ -83,7 +86,7 @@ public class Database {
     public void ExecutePreparedUpdate(final String query, final Map parameters) throws SQLException {
         preparedStatement = connection.prepareStatement(query);
         parameters.forEach((index, parameterEntry) -> {
-            AbstractMap.SimpleEntry<Object, Object> parameter = (AbstractMap.SimpleEntry<Object, Object>) parameterEntry;
+            var parameter = (AbstractMap.SimpleEntry<Object, Object>) parameterEntry;
             if (parameter.getKey().equals(Integer.class)) {
                 try {
                     preparedStatement.setInt((Integer) index, (Integer) parameter.getValue());
@@ -115,7 +118,7 @@ public class Database {
         try {
             preparedStatement = connection.prepareStatement(query);
             parameters.forEach((index, parameterEntry) -> {
-                AbstractMap.SimpleEntry<Object, Object> parameter = (AbstractMap.SimpleEntry<Object, Object>) parameterEntry;
+                var parameter = (AbstractMap.SimpleEntry<Object, Object>) parameterEntry;
                 if (parameter.getKey().equals(Integer.class)) {
                     try {
                         preparedStatement.setInt((Integer) index, (Integer) parameter.getValue());
