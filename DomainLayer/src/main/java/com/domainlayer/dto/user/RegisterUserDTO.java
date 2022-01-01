@@ -1,8 +1,6 @@
 package com.domainlayer.dto.user;
 
-import java.io.Serializable;
-
-public class RegisterUserDTO implements Serializable {
+public class RegisterUserDTO {
     private final String email;
     private final String passwd;
     private final String name;

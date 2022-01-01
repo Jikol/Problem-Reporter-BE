@@ -13,7 +13,7 @@ public class LoginUserDTO {
         return email;
     }
 
-    public String getPassword() {
+    public String getPasswd() {
         return passwd;
     }
 

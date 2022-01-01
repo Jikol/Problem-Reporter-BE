@@ -15,7 +15,7 @@ public class JsonBuilder {
                 .add("timestamp", new Date(System.currentTimeMillis()).toString())
                 .add("status", (Integer) message.get("status"));
         if (message.get("error") != null) {
-            target.add("errorMessage", message.get("error").toString());
+            target.add("error", message.get("error").toString());
         }
         if (message.get("token") != null) {
             target.add("token", message.get("token").toString());
