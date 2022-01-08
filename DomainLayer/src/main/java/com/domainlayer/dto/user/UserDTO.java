@@ -1,24 +1,18 @@
 package com.domainlayer.dto.user;
 
-public class UserDTO {
-    private final String email;
-    private final String name;
-    private final String surname;
+import com.domainlayer.dto.SuperUserDTO;
 
+public class UserDTO extends SuperUserDTO {
     public UserDTO(final String email, final String name, final String surname) {
-        this.email = email;
-        this.name = name;
-        this.surname = surname;
+        super(email, null, name, surname);
     }
 
     public String getEmail() {
         return email;
     }
-
     public String getName() {
         return name;
     }
-
     public String getSurname() {
         return surname;
     }

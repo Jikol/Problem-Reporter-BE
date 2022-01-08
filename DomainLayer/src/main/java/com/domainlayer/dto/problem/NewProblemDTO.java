@@ -1,0 +1,50 @@
+package com.domainlayer.dto.problem;
+
+import com.domainlayer.dto.SuperProblemDTO;
+import com.domainlayer.dto.user.RegisterUserDTO;
+
+public class NewProblemDTO extends SuperProblemDTO {
+    private final RegisterUserDTO registerUserDTO;
+
+    public NewProblemDTO(String title, String summary, String configuration, String expectedBehavior,
+                         String actualBehavior, String context, RegisterUserDTO registerUserDTO) {
+        super(title, summary, configuration, expectedBehavior, actualBehavior, context);
+        this.registerUserDTO = registerUserDTO;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+    public String getSummary() {
+        return summary;
+    }
+    public String getConfiguration() {
+        return configuration;
+    }
+    public String getExpectedBehavior() {
+        return expectedBehavior;
+    }
+    public String getActualBehavior() {
+        return actualBehavior;
+    }
+    public String getContext() {
+        return context;
+    }
+
+    public RegisterUserDTO getRegisterUserDTO() {
+        return registerUserDTO;
+    }
+
+    @Override
+    public String toString() {
+        return "NewProblemDTO{" +
+                "title='" + title + '\'' +
+                ", summary='" + summary + '\'' +
+                ", configuration='" + configuration + '\'' +
+                ", expectedBehavior='" + expectedBehavior + '\'' +
+                ", actualBehavior='" + actualBehavior + '\'' +
+                ", context='" + context + '\'' +
+                ", newProblemUserDTO=" + registerUserDTO +
+                '}';
+    }
+}

@@ -14,7 +14,7 @@ public class UserEntity {
         this.surname = surname;
     }
 
-    public UserEntity(final Integer id, final String email, final String passwd, final String name, final String surname) {
+    public UserEntity(final int id, final String email, final String passwd, final String name, final String surname) {
         this.id = id;
         this.email = email;
         this.passwd = passwd;
@@ -22,25 +22,11 @@ public class UserEntity {
         this.surname = surname;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPasswd() {
-        return passwd;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
+    public Integer getId() { return id; }
+    public String getEmail() { return email; }
+    public String getPasswd() { return passwd; }
+    public String getName() { return name; }
+    public String getSurname() { return surname; }
 
     @Override
     public String toString() {

@@ -1,6 +1,7 @@
 package com.domainlayer.module;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.MalformedJsonException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 
@@ -9,10 +10,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class JwtToken {
     private JwtToken() {
@@ -40,11 +38,12 @@ public class JwtToken {
         return new SecretKeySpec(decodedKey, 0, decodedKey.length, "HMACSHA256");
     }
 
-    private static Map DecodeToken(final String token) {
+    public static Map DecodeToken(final String token) throws Exception {
         String[] chunks = token.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
-        Map<String, Object> header = new Gson().fromJson(new String(decoder.decode(chunks[0])), HashMap.class);
-        Map<String, Object> payload = new Gson().fromJson(new String(decoder.decode(chunks[1])), HashMap.class);
+        Map<String, Object> header, payload;
+        header = new Gson().fromJson(new String(decoder.decode(chunks[0])), HashMap.class);
+        payload = new Gson().fromJson(new String(decoder.decode(chunks[1])), HashMap.class);
         return Map.of(
                 "header", header,
                 "payload", payload
@@ -63,7 +62,7 @@ public class JwtToken {
         return jwtBuilder.compact();
     }
 
-    public static void ValidateToken(final String token) throws JwtException {
+    public static void ValidateToken(final String token) throws Exception {
         var decodedToken = DecodeToken(token);
         Map header = (Map) decodedToken.get("header");
         Key signingKey = StringToKey((String) header.get("key"));

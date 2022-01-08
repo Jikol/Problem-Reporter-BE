@@ -1,37 +1,20 @@
 package com.domainlayer.dto.user;
 
-public class RegisterUserDTO {
-    private final String email;
-    private final String passwd;
-    private final String name;
-    private final String surname;
+import com.domainlayer.dto.SuperUserDTO;
 
+public class RegisterUserDTO extends SuperUserDTO {
     public RegisterUserDTO(final String email, final String passwd, final String name, final String surname) {
-        this.email = email;
-        this.passwd = passwd;
-        this.name = name;
-        this.surname = surname;
+        super(email, passwd, name, surname);
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPasswd() {
-        return passwd;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
+    public String getEmail() { return email; }
+    public String getPasswd() { return passwd; }
+    public String getName() { return name; }
+    public String getSurname() { return surname; }
 
     @Override
     public String toString() {
-        return "UserDTO{" +
+        return "RegisterUserDTO{" +
                 "email='" + email + '\'' +
                 ", passwd='" + passwd + '\'' +
                 ", name='" + name + '\'' +

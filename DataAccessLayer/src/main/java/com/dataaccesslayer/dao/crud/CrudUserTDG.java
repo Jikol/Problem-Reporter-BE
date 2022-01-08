@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class CrudUserTDG implements IUnitOfWork {
-    private final Map<String, List<UserEntity>> context = new HashMap<>();
     private final Database db = Database.getDatabase();
 
     @Override
@@ -26,15 +25,6 @@ public class CrudUserTDG implements IUnitOfWork {
     @Override
     public void RegisterDeleted(final Object entity) {
         Register((UserEntity) entity, IUnitOfWork.DELETE);
-    }
-
-    private void Register(final UserEntity userEntity, final String operation) {
-        List entitiesToPersistence = context.get(operation);
-        if (entitiesToPersistence == null) {
-            entitiesToPersistence = new ArrayList();
-        }
-        entitiesToPersistence.add(userEntity);
-        context.put(operation, entitiesToPersistence);
     }
 
     @Override

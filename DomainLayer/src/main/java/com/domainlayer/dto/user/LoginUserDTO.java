@@ -1,18 +1,15 @@
 package com.domainlayer.dto.user;
 
-public class LoginUserDTO {
-    private final String email;
-    private final String passwd;
+import com.domainlayer.dto.SuperUserDTO;
 
+public class LoginUserDTO extends SuperUserDTO {
     public LoginUserDTO(String email, String passwd) {
-        this.email = email;
-        this.passwd = passwd;
+        super(email, passwd, null, null);
     }
 
     public String getEmail() {
         return email;
     }
-
     public String getPasswd() {
         return passwd;
     }

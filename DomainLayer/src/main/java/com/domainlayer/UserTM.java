@@ -120,6 +120,11 @@ public class UserTM {
                     "status", 401,
                     "error", "Provided token has expired"
             );
+        } catch (Exception e) {
+            return (Map) Map.of(
+                    "status", 401,
+                    "error", "Provided is invalid"
+            );
         }
         CrudUserTDG crudUserTDG = new CrudUserTDG();
         List<UserDTO> userDTOList = new ArrayList<>();
