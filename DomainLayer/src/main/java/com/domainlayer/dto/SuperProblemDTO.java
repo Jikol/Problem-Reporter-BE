@@ -6,14 +6,12 @@ public class SuperProblemDTO {
     protected final String configuration;
     protected final String expectedBehavior;
     protected final String actualBehavior;
-    protected final String context;
 
-    public SuperProblemDTO(String title, String summary, String configuration, String expectedBehavior, String actualBehavior, String context) {
+    public SuperProblemDTO(String title, String summary, String configuration, String expectedBehavior, String actualBehavior) {
         this.title = title;
         this.summary = summary;
         this.configuration = configuration;
         this.expectedBehavior = expectedBehavior;
         this.actualBehavior = actualBehavior;
-        this.context = context;
     }
 }

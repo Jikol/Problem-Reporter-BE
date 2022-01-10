@@ -7,8 +7,8 @@ public class NewProblemDTO extends SuperProblemDTO {
     private final RegisterUserDTO registerUserDTO;
 
     public NewProblemDTO(String title, String summary, String configuration, String expectedBehavior,
-                         String actualBehavior, String context, RegisterUserDTO registerUserDTO) {
-        super(title, summary, configuration, expectedBehavior, actualBehavior, context);
+                         String actualBehavior, RegisterUserDTO registerUserDTO) {
+        super(title, summary, configuration, expectedBehavior, actualBehavior);
         this.registerUserDTO = registerUserDTO;
     }
 
@@ -27,9 +27,6 @@ public class NewProblemDTO extends SuperProblemDTO {
     public String getActualBehavior() {
         return actualBehavior;
     }
-    public String getContext() {
-        return context;
-    }
 
     public RegisterUserDTO getRegisterUserDTO() {
         return registerUserDTO;
@@ -43,7 +40,6 @@ public class NewProblemDTO extends SuperProblemDTO {
                 ", configuration='" + configuration + '\'' +
                 ", expectedBehavior='" + expectedBehavior + '\'' +
                 ", actualBehavior='" + actualBehavior + '\'' +
-                ", context='" + context + '\'' +
                 ", newProblemUserDTO=" + registerUserDTO +
                 '}';
     }

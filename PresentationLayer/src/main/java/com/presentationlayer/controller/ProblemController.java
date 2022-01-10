@@ -27,7 +27,6 @@ public class ProblemController {
                 (String) problem.get("configuration"),
                 (String) problem.get("expectedBehavior"),
                 (String) problem.get("actualBehavior"),
-                (String) problem.get("context"),
                 new RegisterUserDTO((String) creds.get("email"), (String) creds.get("passwd"),
                         (String) creds.get("name"), (String) creds.get("surname")
                 )
