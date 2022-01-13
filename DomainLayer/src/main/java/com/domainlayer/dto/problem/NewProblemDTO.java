@@ -1,15 +1,21 @@
 package com.domainlayer.dto.problem;
 
 import com.domainlayer.dto.SuperProblemDTO;
+import com.domainlayer.dto.deployment.DeploymentDTO;
 import com.domainlayer.dto.user.RegisterUserDTO;
+
+import java.util.List;
 
 public class NewProblemDTO extends SuperProblemDTO {
     private final RegisterUserDTO registerUserDTO;
+    private final String deploymentDomain;
 
     public NewProblemDTO(String title, String summary, String configuration, String expectedBehavior,
-                         String actualBehavior, RegisterUserDTO registerUserDTO) {
-        super(title, summary, configuration, expectedBehavior, actualBehavior);
+                         String actualBehavior, String deploymentDomain, List attachments,
+                         RegisterUserDTO registerUserDTO) {
+        super(title, summary, configuration, expectedBehavior, actualBehavior, attachments);
         this.registerUserDTO = registerUserDTO;
+        this.deploymentDomain = deploymentDomain;
     }
 
     public String getTitle() {
@@ -27,7 +33,13 @@ public class NewProblemDTO extends SuperProblemDTO {
     public String getActualBehavior() {
         return actualBehavior;
     }
+    public List getAttachments() {
+        return attachments;
+    }
 
+    public String getDeploymentDomain() {
+        return deploymentDomain;
+    }
     public RegisterUserDTO getRegisterUserDTO() {
         return registerUserDTO;
     }
@@ -40,7 +52,9 @@ public class NewProblemDTO extends SuperProblemDTO {
                 ", configuration='" + configuration + '\'' +
                 ", expectedBehavior='" + expectedBehavior + '\'' +
                 ", actualBehavior='" + actualBehavior + '\'' +
-                ", newProblemUserDTO=" + registerUserDTO +
+                ", attachments=" + attachments +
+                ", registerUserDTO=" + registerUserDTO +
+                ", deploymentDomain='" + deploymentDomain + '\'' +
                 '}';
     }
 }

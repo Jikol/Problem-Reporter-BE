@@ -22,6 +22,14 @@ public class UserEntity {
         this.surname = surname;
     }
 
+    public UserEntity(Integer id) {
+        this.id = id;
+        this.email = null;
+        this.passwd = null;
+        this.name = null;
+        this.surname = null;
+    }
+
     public Integer getId() { return id; }
     public String getEmail() { return email; }
     public String getPasswd() { return passwd; }

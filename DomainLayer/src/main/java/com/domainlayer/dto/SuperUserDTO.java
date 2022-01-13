@@ -1,5 +1,7 @@
 package com.domainlayer.dto;
 
+import java.util.List;
+
 public class SuperUserDTO {
     protected final String email;
     protected final String passwd;

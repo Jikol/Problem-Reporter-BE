@@ -16,13 +16,18 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UserTM {
-    private static int userRegistered;
+    private int userRegistered = 0;
+    private List<Integer> userRegisteredIds = new ArrayList<>();
 
-    public UserTM() {
-        userRegistered = 0;
+    public int GetRegisteredUser() {
+        return userRegistered;
     }
 
-    public Map<Object, Object> RegisterUser(final RegisterUserDTO registerUserDTO) {
+    public List<Integer> getUserRegisteredIds() {
+        return userRegisteredIds;
+    }
+
+    public Map<Object, Object> RegisterUser(final RegisterUserDTO registerUserDTO, final boolean commit) {
         if (registerUserDTO.getEmail() == null || registerUserDTO.getPasswd() == null) {
             return Map.of(
                     "status", 400,
@@ -33,13 +38,14 @@ public class UserTM {
         String hashedPassword = PasswordEncryption.GetHashedPassword(registerUserDTO.getPasswd());
         crudUserTDG.RegisterNew(new UserEntity(registerUserDTO.getEmail(), hashedPassword, registerUserDTO.getName(), registerUserDTO.getSurname()));
         try {
-            userRegistered += crudUserTDG.Commit();
+            userRegistered += crudUserTDG.Commit(commit);
         } catch (Exception ex) {
             return Map.of(
                     "status", 409,
                     "error", ex.getLocalizedMessage()
             );
         }
+        userRegisteredIds = crudUserTDG.getInsertedIds();
         String token = JwtToken.GenerateToken(registerUserDTO.getEmail(), hashedPassword);
         return Map.of(
                 "status", 201,
@@ -60,7 +66,7 @@ public class UserTM {
             }
         });
         try {
-            userRegistered += crudUserTDG.Commit();
+            userRegistered += crudUserTDG.Commit(true);
         } catch (Exception ex) {
             return Map.of(
                     "status", 409,
@@ -85,8 +91,7 @@ public class UserTM {
                     "error", "Email and Password are mandatory attributes"
             );
         }
-        CrudUserTDG crudUserTDG = new CrudUserTDG();
-        UserEntity userEntity = crudUserTDG.SelectByEmail(loginUserDTO.getEmail());
+        UserEntity userEntity = new CrudUserTDG().SelectByEmail(loginUserDTO.getEmail());
         if (userEntity == null) {
             return Map.of(
                     "status", 404,
@@ -133,9 +138,5 @@ public class UserTM {
             userDTOList.add(new UserDTO(userEntity.getEmail(), userEntity.getName(), userEntity.getSurname()));
         });
         return (List<UserDTO>) userDTOList;
-    }
-
-    public int GetRegisteredUser() {
-        return userRegistered;
     }
 }

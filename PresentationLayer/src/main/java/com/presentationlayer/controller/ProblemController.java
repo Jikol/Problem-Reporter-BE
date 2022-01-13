@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,19 +28,20 @@ public class ProblemController {
                 (String) problem.get("configuration"),
                 (String) problem.get("expectedBehavior"),
                 (String) problem.get("actualBehavior"),
+                (String) requestProblem.get("domain"),
+                (List) requestProblem.get("attachments"),
                 new RegisterUserDTO((String) creds.get("email"), (String) creds.get("passwd"),
                         (String) creds.get("name"), (String) creds.get("surname")
                 )
         );
-        Map message = new ProblemTM().CreateNewProblem(newProblemDTO);
-        return new ResponseEntity(JsonBuilder.BuildResponseJson(message),
-                HttpStatus.valueOf((Integer) message.get("status"))
+        Map callback = new ProblemTM().CreateNewProblem(newProblemDTO);
+        return new ResponseEntity(JsonBuilder.BuildResponseJson(callback),
+                HttpStatus.valueOf((Integer) callback.get("status"))
         );
     }
 
     @PostMapping("/new")
-    public ResponseEntity<String> reportProblem(@RequestBody NewProblemDTO newProblemDTO) {
-
+    public ResponseEntity<String> reportProblem(@RequestBody Map requestProblem) {
         return null;
     }
 }

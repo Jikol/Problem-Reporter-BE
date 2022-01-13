@@ -1,10 +1,7 @@
 package com.dataaccesslayer;
 
-import com.dataaccesslayer.entity.UserEntity;
-
 import java.sql.*;
 import java.util.AbstractMap;
-import java.util.List;
 import java.util.Map;
 
 public class Database {
@@ -79,12 +76,21 @@ public class Database {
         }
     }
 
-    public void ExecuteUpdate(final String query) throws SQLException {
-        statement.executeUpdate(query);
+    public int ExecuteUpdate(final String query) throws SQLException {
+        int affectedRows = statement.executeUpdate(query);
+        if (affectedRows == 0) {
+            throw new SQLException("None rows has been affected due to failed insert");
+        }
+        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+        if (generatedKeys.next()) {
+            return generatedKeys.getInt(1);
+        } else {
+            throw new SQLException("No key obtained from inserted entity");
+        }
     }
 
-    public void ExecutePreparedUpdate(final String query, final Map parameters) throws SQLException {
-        preparedStatement = connection.prepareStatement(query);
+    public int ExecutePreparedUpdate(final String query, final Map parameters) throws SQLException {
+        preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
         parameters.forEach((index, parameterEntry) -> {
             var parameter = (AbstractMap.SimpleEntry<Object, Object>) parameterEntry;
             if (parameter.getKey().equals(Integer.class)) {
@@ -102,7 +108,16 @@ public class Database {
                 }
             }
         });
-        preparedStatement.executeUpdate();
+        int affectedRows = preparedStatement.executeUpdate();
+        if (affectedRows == 0) {
+            throw new SQLException("None rows has been affected due to failed insert");
+        }
+        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+        if (generatedKeys.next()) {
+            return generatedKeys.getInt(1);
+        } else {
+            throw new SQLException("No key obtained from inserted entity");
+        }
     }
 
     public ResultSet ExecuteSelect(final String query) {

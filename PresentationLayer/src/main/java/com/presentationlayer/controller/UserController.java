@@ -19,17 +19,17 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> userRegister(@RequestBody RegisterUserDTO user) {
-        Map message = new UserTM().RegisterUser(user);
-        return new ResponseEntity(JsonBuilder.BuildResponseJson(message),
-                HttpStatus.valueOf((Integer) message.get("status"))
+        Map callback = new UserTM().RegisterUser(user, true);
+        return new ResponseEntity(JsonBuilder.BuildResponseJson(callback),
+                HttpStatus.valueOf((Integer) callback.get("status"))
         );
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> userLogin(@RequestBody LoginUserDTO user) {
-        Map message = new UserTM().loginUser(user);
-        return new ResponseEntity(JsonBuilder.BuildResponseJson(message),
-                HttpStatus.valueOf((Integer) message.get("status"))
+        Map callback = new UserTM().loginUser(user);
+        return new ResponseEntity(JsonBuilder.BuildResponseJson(callback),
+                HttpStatus.valueOf((Integer) callback.get("status"))
         );
     }
 }

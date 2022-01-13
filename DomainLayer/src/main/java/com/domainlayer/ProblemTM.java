@@ -1,43 +1,108 @@
 package com.domainlayer;
 
-import com.dataaccesslayer.dao.crud.CrudUserTDG;
+import com.dataaccesslayer.dao.crud.CrudAttachmentTDG;
+import com.dataaccesslayer.dao.crud.CrudDeploymentTDG;
+import com.dataaccesslayer.dao.crud.CrudProblemTDG;
+import com.dataaccesslayer.entity.AttachmentEntity;
+import com.dataaccesslayer.entity.DeploymentEntity;
+import com.dataaccesslayer.entity.ProblemEntity;
 import com.dataaccesslayer.entity.UserEntity;
 import com.domainlayer.dto.problem.NewProblemDTO;
 import com.domainlayer.dto.user.RegisterUserDTO;
-import com.domainlayer.module.JwtToken;
+import io.jsonwebtoken.ExpiredJwtException;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ProblemTM {
+    private int problemReported = 0;
+    private int attachmentCreated = 0;
+
+    public int getProblemReported() {
+        return problemReported;
+    }
+    public int getAttachmentCreated() {
+        return attachmentCreated;
+    }
 
     public Map<Object, Object> CreateNewProblem(final NewProblemDTO newProblemDTO) {
         if (newProblemDTO.getTitle() == null || newProblemDTO.getSummary() == null ||
-            newProblemDTO.getActualBehavior() == null || newProblemDTO.getExpectedBehavior() == null) {
+            newProblemDTO.getActualBehavior() == null || newProblemDTO.getExpectedBehavior() == null ||
+            newProblemDTO.getDeploymentDomain() == null) {
             return Map.of(
                     "status", 400,
                     "error", "One of the including attributes is not provided (title, summary, actualBehavior, expectedBehavior)"
             );
         }
+        DeploymentEntity deploymentEntity = null;
+        try {
+            deploymentEntity = new CrudDeploymentTDG().SelectByDomain(newProblemDTO.getDeploymentDomain());
+        } catch (NullPointerException ex) {
+            return Map.of(
+                    "status", 404,
+                    "error", "Deployment does not exist for provided domain"
+            );
+        }
+        UserEntity userEntity = null;
+        Map registerUserCallback = null;
         if (newProblemDTO.getRegisterUserDTO() != null) {
-            Map message = new UserTM().RegisterUser(new RegisterUserDTO(
+            UserTM userTM = new UserTM();
+            registerUserCallback = userTM.RegisterUser(new RegisterUserDTO(
                     newProblemDTO.getRegisterUserDTO().getEmail(),
                     newProblemDTO.getRegisterUserDTO().getPasswd(),
                     newProblemDTO.getRegisterUserDTO().getName(),
-                    newProblemDTO.getRegisterUserDTO().getSurname()
-            ));
-            if ((int) message.get("status") != 201) {
-                return message;
+                    newProblemDTO.getRegisterUserDTO().getSurname()),
+                    false
+            );
+            if ((int) registerUserCallback.get("status") != 201) {
+                return registerUserCallback;
+            }
+            userEntity = new UserEntity(userTM.getUserRegisteredIds().get(userTM.getUserRegisteredIds().size() - 1));
+        }
+        boolean commitProblem = true;
+        if (newProblemDTO.getAttachments() != null) {
+            commitProblem = false;
+        }
+        CrudProblemTDG crudProblemTDG = new CrudProblemTDG();
+        crudProblemTDG.RegisterNew(new ProblemEntity(
+                newProblemDTO.getTitle(),
+                newProblemDTO.getSummary(),
+                newProblemDTO.getConfiguration(),
+                newProblemDTO.getExpectedBehavior(),
+                newProblemDTO.getActualBehavior(),
+                userEntity,
+                deploymentEntity
+        ));
+        try {
+            problemReported += crudProblemTDG.Commit(commitProblem);
+        } catch (Exception ex) {
+            return Map.of(
+                    "status", 409,
+                    "error", ex.getLocalizedMessage()
+            );
+        }
+        if (!commitProblem) {
+            List attachments = newProblemDTO.getAttachments();
+            CrudAttachmentTDG crudAttachmentTDG = new CrudAttachmentTDG();
+            ProblemEntity problemEntity = new ProblemEntity(
+                    crudProblemTDG.getInsertedIds().get(crudProblemTDG.getInsertedIds().size() - 1)
+            );
+            attachments.forEach(attachment -> {
+                crudAttachmentTDG.RegisterNew(new AttachmentEntity((String) attachment, problemEntity));
+            });
+            try {
+                attachmentCreated += crudAttachmentTDG.Commit(true);
+            } catch (Exception ex) {
+                return Map.of(
+                        "status", 409,
+                        "error", ex.getLocalizedMessage()
+                );
             }
         }
-        String email = null;
-        try {
-//            Map sub = (Map) JwtToken.DecodeToken(newProblemDTO.getNewProblemUserDTO().getToken()).get("payload");
-//            email = (String) sub.get("sub");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        System.out.println(email);
-        return null;
+        return Map.of(
+                "status", 201,
+                "created", problemReported + attachmentCreated,
+                "token", registerUserCallback.get("token")
+        );
     }
 }
