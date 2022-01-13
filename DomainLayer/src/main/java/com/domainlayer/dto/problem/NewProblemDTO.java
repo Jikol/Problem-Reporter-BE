@@ -18,6 +18,13 @@ public class NewProblemDTO extends SuperProblemDTO {
         this.deploymentDomain = deploymentDomain;
     }
 
+    public NewProblemDTO(String title, String summary, String configuration, String expectedBehavior,
+                         String actualBehavior, String deploymentDomain, List attachments) {
+        super(title, summary, configuration, expectedBehavior, actualBehavior, attachments);
+        this.registerUserDTO = null;
+        this.deploymentDomain = deploymentDomain;
+    }
+
     public String getTitle() {
         return title;
     }

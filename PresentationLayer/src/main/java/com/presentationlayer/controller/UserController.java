@@ -1,15 +1,12 @@
 package com.presentationlayer.controller;
 
 import com.domainlayer.UserTM;
-import com.domainlayer.dto.user.LoginUserDTO;
+import com.domainlayer.dto.user.AuthenicateUserDTO;
 import com.domainlayer.dto.user.RegisterUserDTO;
 import com.presentationlayer.module.JsonBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -25,9 +22,9 @@ public class UserController {
         );
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> userLogin(@RequestBody LoginUserDTO user) {
-        Map callback = new UserTM().loginUser(user);
+    @PostMapping("/auth")
+    public ResponseEntity<String> userAuthenticate(@RequestBody AuthenicateUserDTO user) {
+        Map callback = new UserTM().AuthenticateUser(user);
         return new ResponseEntity(JsonBuilder.BuildResponseJson(callback),
                 HttpStatus.valueOf((Integer) callback.get("status"))
         );

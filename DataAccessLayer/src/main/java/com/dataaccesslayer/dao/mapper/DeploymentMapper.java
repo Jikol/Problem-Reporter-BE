@@ -8,8 +8,12 @@ import java.sql.SQLException;
 
 public class DeploymentMapper extends AbstractRowMapper<DeploymentEntity> {
 
+    public DeploymentMapper() {
+        super(DeploymentEntity.class);
+    }
+
     @Override
-    protected DeploymentEntity mapRow(ResultSet rs) {
+    protected DeploymentEntity mapRow(ResultSet rs) throws Exception {
         try {
             int id = rs.getInt("id");
             String domain = rs.getString("domain");
@@ -17,8 +21,7 @@ public class DeploymentMapper extends AbstractRowMapper<DeploymentEntity> {
             String desc = rs.getString("desc");
             return new DeploymentEntity(id, domain, contact, desc);
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
+            throw new Exception(ex);
         }
     }
 }

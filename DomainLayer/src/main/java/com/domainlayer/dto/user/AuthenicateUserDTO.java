@@ -2,8 +2,8 @@ package com.domainlayer.dto.user;
 
 import com.domainlayer.dto.SuperUserDTO;
 
-public class LoginUserDTO extends SuperUserDTO {
-    public LoginUserDTO(String email, String passwd) {
+public class AuthenicateUserDTO extends SuperUserDTO {
+    public AuthenicateUserDTO(String email, String passwd) {
         super(email, passwd, null, null);
     }
 
@@ -16,7 +16,7 @@ public class LoginUserDTO extends SuperUserDTO {
 
     @Override
     public String toString() {
-        return "LoginUserDTO{" +
+        return "AuthenticateUserDTO{" +
                 "email='" + email + '\'' +
                 ", password='" + passwd + '\'' +
                 '}';

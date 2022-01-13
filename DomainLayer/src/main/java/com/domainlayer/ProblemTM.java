@@ -3,14 +3,19 @@ package com.domainlayer;
 import com.dataaccesslayer.dao.crud.CrudAttachmentTDG;
 import com.dataaccesslayer.dao.crud.CrudDeploymentTDG;
 import com.dataaccesslayer.dao.crud.CrudProblemTDG;
+import com.dataaccesslayer.dao.crud.CrudUserTDG;
 import com.dataaccesslayer.entity.AttachmentEntity;
 import com.dataaccesslayer.entity.DeploymentEntity;
 import com.dataaccesslayer.entity.ProblemEntity;
 import com.dataaccesslayer.entity.UserEntity;
 import com.domainlayer.dto.problem.NewProblemDTO;
+import com.domainlayer.dto.problem.ProblemDTO;
 import com.domainlayer.dto.user.RegisterUserDTO;
+import com.domainlayer.module.JwtException;
+import com.domainlayer.module.JwtToken;
 import io.jsonwebtoken.ExpiredJwtException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +30,7 @@ public class ProblemTM {
         return attachmentCreated;
     }
 
-    public Map<Object, Object> CreateNewProblem(final NewProblemDTO newProblemDTO) {
+    public Map<Object, Object> CreateNewProblem(final NewProblemDTO newProblemDTO, String token) {
         if (newProblemDTO.getTitle() == null || newProblemDTO.getSummary() == null ||
             newProblemDTO.getActualBehavior() == null || newProblemDTO.getExpectedBehavior() == null ||
             newProblemDTO.getDeploymentDomain() == null) {
@@ -37,10 +42,10 @@ public class ProblemTM {
         DeploymentEntity deploymentEntity = null;
         try {
             deploymentEntity = new CrudDeploymentTDG().SelectByDomain(newProblemDTO.getDeploymentDomain());
-        } catch (NullPointerException ex) {
+        } catch (Exception ex) {
             return Map.of(
                     "status", 404,
-                    "error", "Deployment does not exist for provided domain"
+                    "error", ex.getLocalizedMessage()
             );
         }
         UserEntity userEntity = null;
@@ -58,6 +63,16 @@ public class ProblemTM {
                 return registerUserCallback;
             }
             userEntity = new UserEntity(userTM.getUserRegisteredIds().get(userTM.getUserRegisteredIds().size() - 1));
+        } else {
+            Map decodedToken = (Map) JwtToken.DecodeToken(token.replace("Bearer ", "")).get("payload");
+            try {
+                userEntity = new CrudUserTDG().SelectByEmail((String) decodedToken.get("sub"));
+            } catch (Exception ex) {
+                return Map.of(
+                        "status", 404,
+                        "error", ex.getLocalizedMessage()
+                );
+            }
         }
         boolean commitProblem = true;
         if (newProblemDTO.getAttachments() != null) {
@@ -99,10 +114,40 @@ public class ProblemTM {
                 );
             }
         }
-        return Map.of(
-                "status", 201,
-                "created", problemReported + attachmentCreated,
-                "token", registerUserCallback.get("token")
-        );
+        if (newProblemDTO.getRegisterUserDTO() != null) {
+            return Map.of(
+                    "status", 201,
+                    "created", problemReported + attachmentCreated,
+                    "token", registerUserCallback.get("token")
+            );
+        } else {
+            return Map.of(
+                    "status", 201,
+                    "created", problemReported + attachmentCreated
+            );
+        }
+    }
+
+    public Object listAllUserProblems(final String token) {
+        try {
+            JwtToken.ValidateToken(token.replace("Bearer ", ""));
+        } catch (JwtException ex) {
+            return ex.getMyMessage();
+        }
+        Map decodedToken = (Map) JwtToken.DecodeToken(token.replace("Bearer ", "")).get("payload");
+        List<ProblemEntity> problemEntities = new ArrayList<>();
+        try {
+            problemEntities = new CrudProblemTDG().SelectAll((String) decodedToken.get("sub"));
+        } catch (Exception ex) {
+            return Map.of(
+                    "status", 404,
+                    "error", ex.getLocalizedMessage()
+            );
+        }
+        problemEntities.forEach(problemEntity -> {
+
+        });
+        List<ProblemDTO> problemDTOList = new ArrayList<>();
+        return null;
     }
 }

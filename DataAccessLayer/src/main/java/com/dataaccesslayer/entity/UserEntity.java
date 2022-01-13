@@ -1,18 +1,11 @@
 package com.dataaccesslayer.entity;
 
 public class UserEntity {
-    private Integer id = null;
-    private final String email;
-    private final String passwd;
-    private final String name;
-    private final String surname;
-
-    public UserEntity(final String email, final String passwd, final String name, final String surname) {
-        this.email = email;
-        this.passwd = passwd;
-        this.name = name;
-        this.surname = surname;
-    }
+    private Integer id;
+    private String email;
+    private String passwd;
+    private String name;
+    private String surname;
 
     public UserEntity(final int id, final String email, final String passwd, final String name, final String surname) {
         this.id = id;
@@ -22,12 +15,15 @@ public class UserEntity {
         this.surname = surname;
     }
 
+    public UserEntity(final String email, final String passwd, final String name, final String surname) {
+        this.email = email;
+        this.passwd = passwd;
+        this.name = name;
+        this.surname = surname;
+    }
+
     public UserEntity(Integer id) {
         this.id = id;
-        this.email = null;
-        this.passwd = null;
-        this.name = null;
-        this.surname = null;
     }
 
     public Integer getId() { return id; }

@@ -1,27 +1,29 @@
 package com.dataaccesslayer.dao.mapper;
 
-import com.dataaccesslayer.Database;
 import com.dataaccesslayer.dao.AbstractRowMapper;
-import com.dataaccesslayer.entity.UserEntity;
+import com.dataaccesslayer.entity.EmployeeEntity;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
-public class UserMapper extends AbstractRowMapper<UserEntity> {
+public class EmployeeMapper extends AbstractRowMapper<EmployeeEntity> {
 
-    public UserMapper() {
-        super(UserEntity.class);
+    public EmployeeMapper() {
+        super(EmployeeEntity.class);
     }
 
     @Override
-    protected UserEntity mapRow(ResultSet rs) throws Exception {
+    protected EmployeeEntity mapRow(ResultSet rs) throws Exception {
         try {
             int id = rs.getInt("id");
             String email = rs.getString("email");
             String passwd = rs.getString("passwd");
             String name = rs.getString("name");
             String surname = rs.getString("surname");
-            return new UserEntity(id, email, passwd, name, surname);
+            Date entryDate = rs.getDate("entry_date");
+            Date terminationDate = rs.getDate("termination_date");
+            return new EmployeeEntity(id, email, passwd, name, surname, entryDate, terminationDate);
         } catch (SQLException ex) {
             throw new Exception(ex);
         }

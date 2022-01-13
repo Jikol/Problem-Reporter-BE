@@ -80,22 +80,18 @@ public class CrudUserTDG implements IUnitOfWork<UserEntity> {
     @Override
     public void Delete(final UserEntity userEntity) {}
 
-    public UserEntity SelectByEmail(final String emailParam) {
+    public UserEntity SelectByEmail(final String emailParam) throws Exception {
         db.BeginConnection();
         String query = "SELECT * FROM data.user WHERE email LIKE ?";
         var parameters = new HashMap<>();
         parameters.put(1, new AbstractMap.SimpleEntry(String.class, emailParam));
-        UserEntity userEntity = new UserMapper().mapResultSingle(db.ExecutePreparedSelect(query, parameters));
-        db.EndConnection();
-        return userEntity;
+        return new UserMapper().mapResultSingle(db, db.ExecutePreparedSelect(query, parameters));
     }
 
-    public List<UserEntity> SelectAll() {
+    public List<UserEntity> SelectAll() throws Exception {
         db.BeginConnection();
-        String query = "SELECT * FROM \"user\"";
-        List<UserEntity> userEntities = new UserMapper().mapResultSet(db.ExecuteSelect(query));
-        db.EndConnection();
-        return userEntities;
+        String query = "SELECT * FROM data.user";
+        return new UserMapper().mapResultSet(db, db.ExecuteSelect(query));
     }
 
     private void Register(final UserEntity entity, final String operation) {

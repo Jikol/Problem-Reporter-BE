@@ -2,7 +2,9 @@ package com.dataaccesslayer.dao.crud;
 
 import com.dataaccesslayer.Database;
 import com.dataaccesslayer.dao.IUnitOfWork;
+import com.dataaccesslayer.dao.mapper.DeploymentMapper;
 import com.dataaccesslayer.entity.AttachmentEntity;
+import com.dataaccesslayer.entity.DeploymentEntity;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -77,6 +79,12 @@ public class CrudAttachmentTDG implements IUnitOfWork<AttachmentEntity> {
 
     }
 
+    public List<AttachmentEntity> SelectAllById(final int idParam) throws Exception {
+        db.BeginConnection();
+        String query = "SELECT * FROM data.attachment WHERE problem_id = ?";
+        var parameters = new HashMap<>();
+        parameters.put(1, new AbstractMap.SimpleEntry(Integer.class, idParam));
+    }
 
     private void Register(final AttachmentEntity entity, final String operation) {
         List entitiesToPersistence = context.get(operation);

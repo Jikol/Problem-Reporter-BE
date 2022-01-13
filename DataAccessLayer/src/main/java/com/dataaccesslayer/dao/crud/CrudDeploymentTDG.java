@@ -10,13 +10,11 @@ import java.util.HashMap;
 public class CrudDeploymentTDG {
     private final Database db = Database.getDatabase();
 
-    public DeploymentEntity SelectByDomain(final String domainParam) throws NullPointerException {
+    public DeploymentEntity SelectByDomain(final String domainParam) throws Exception {
         db.BeginConnection();
         String query = "SELECT * FROM data.deployment WHERE domain LIKE ?";
         var parameters = new HashMap<>();
         parameters.put(1, new AbstractMap.SimpleEntry(String.class, domainParam));
-        DeploymentEntity deploymentEntity = new DeploymentMapper().mapResultSingle(db.ExecutePreparedSelect(query, parameters));
-        db.EndConnection();
-        return deploymentEntity;
+        return new DeploymentMapper().mapResultSingle(db, db.ExecutePreparedSelect(query, parameters));
     }
 }

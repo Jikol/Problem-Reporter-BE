@@ -2,6 +2,8 @@ package com.dataaccesslayer.dao.crud;
 
 import com.dataaccesslayer.Database;
 import com.dataaccesslayer.dao.IUnitOfWork;
+import com.dataaccesslayer.dao.mapper.ProblemMapper;
+import com.dataaccesslayer.dao.mapper.UserMapper;
 import com.dataaccesslayer.entity.ProblemEntity;
 
 import java.sql.SQLException;
@@ -84,6 +86,20 @@ public class CrudProblemTDG implements IUnitOfWork<ProblemEntity> {
     @Override
     public void Delete(final ProblemEntity entity) throws SQLException {
 
+    }
+
+    public List<ProblemEntity> SelectAll(final String emailParam) throws Exception {
+        db.BeginConnection();
+        String query = "SELECT *\n" +
+                "FROM data.problem\n" +
+                "WHERE EXISTS (\n" +
+                "    SELECT id\n" +
+                "    FROM data.\"user\"\n" +
+                "    WHERE problem.user_id = \"user\".id AND email LIKE ?'\n" +
+                ")";
+        var parameters = new HashMap<>();
+        parameters.put(1, new AbstractMap.SimpleEntry(String.class, emailParam));
+        return new ProblemMapper().mapResultSet(db, db.ExecutePreparedSelect(query, parameters));
     }
 
     private void Register(final ProblemEntity entity, final String operation) {

@@ -38,7 +38,7 @@ public class JwtToken {
         return new SecretKeySpec(decodedKey, 0, decodedKey.length, "HMACSHA256");
     }
 
-    public static Map DecodeToken(final String token) throws Exception {
+    public static Map DecodeToken(final String token) {
         String[] chunks = token.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
         Map<String, Object> header, payload;
@@ -62,10 +62,27 @@ public class JwtToken {
         return jwtBuilder.compact();
     }
 
-    public static void ValidateToken(final String token) throws Exception {
-        var decodedToken = DecodeToken(token);
-        Map header = (Map) decodedToken.get("header");
-        Key signingKey = StringToKey((String) header.get("key"));
-        Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token);
+    public static void ValidateToken(final String token) throws JwtException {
+        try {
+            var decodedToken = DecodeToken(token);
+            Map header = (Map) decodedToken.get("header");
+            Key signingKey = StringToKey((String) header.get("key"));
+            Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token);
+        } catch (SignatureException ex) {
+            throw new JwtException((Map) Map.of(
+                    "status", 401,
+                    "error", "Provided token has invalid signature"
+            ));
+        } catch (ExpiredJwtException ex) {
+            throw new JwtException((Map) Map.of(
+                    "status", 401,
+                    "error", "Provided token has expired"
+            ));
+        } catch (Exception e) {
+            throw new JwtException((Map) Map.of(
+                    "status", 401,
+                    "error", "Provided is invalid"
+            ));
+        }
     }
 }

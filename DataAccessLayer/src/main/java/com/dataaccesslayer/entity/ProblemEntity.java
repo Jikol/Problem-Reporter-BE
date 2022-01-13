@@ -1,25 +1,14 @@
 package com.dataaccesslayer.entity;
 
 public class ProblemEntity {
-    private Integer id = null;
-    private final String title;
-    private final String summary;
-    private final String configuration;
-    private final String expectedBehavior;
-    private final String actualBehavior;
-    private final UserEntity userEntity;
-    private final DeploymentEntity deploymentEntity;
-
-    public ProblemEntity(final String title, final String summary, final String configuration, final String expectedBehavior,
-                         final String actualBehavior, final UserEntity userEntity, DeploymentEntity deploymentEntity) {
-        this.title = title;
-        this.summary = summary;
-        this.configuration = configuration;
-        this.expectedBehavior = expectedBehavior;
-        this.actualBehavior = actualBehavior;
-        this.userEntity = userEntity;
-        this.deploymentEntity = deploymentEntity;
-    }
+    private Integer id;
+    private String title;
+    private String summary;
+    private String configuration;
+    private String expectedBehavior;
+    private String actualBehavior;
+    private UserEntity userEntity;
+    private DeploymentEntity deploymentEntity;
 
     public ProblemEntity(final int id, final String title, final String summary, final String configuration, final String expectedBehavior,
                          final String actualBehavior, final UserEntity userEntity, DeploymentEntity deploymentEntity) {
@@ -33,15 +22,28 @@ public class ProblemEntity {
         this.deploymentEntity = deploymentEntity;
     }
 
+    public ProblemEntity(final String title, final String summary, final String configuration, final String expectedBehavior,
+                         final String actualBehavior, final UserEntity userEntity, DeploymentEntity deploymentEntity) {
+        this.title = title;
+        this.summary = summary;
+        this.configuration = configuration;
+        this.expectedBehavior = expectedBehavior;
+        this.actualBehavior = actualBehavior;
+        this.userEntity = userEntity;
+        this.deploymentEntity = deploymentEntity;
+    }
+
+    public ProblemEntity(Integer id, String title, String summary, String configuration, String expectedBehavior, String actualBehavior) {
+        this.id = id;
+        this.title = title;
+        this.summary = summary;
+        this.configuration = configuration;
+        this.expectedBehavior = expectedBehavior;
+        this.actualBehavior = actualBehavior;
+    }
+
     public ProblemEntity(Integer id) {
         this.id = id;
-        this.title = null;
-        this.summary = null;
-        this.configuration = null;
-        this.expectedBehavior = null;
-        this.actualBehavior = null;
-        this.userEntity = null;
-        this.deploymentEntity = null;
     }
 
     public Integer getId() { return id; }
