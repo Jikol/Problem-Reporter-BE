@@ -62,12 +62,14 @@ public class JwtToken {
         return jwtBuilder.compact();
     }
 
-    public static void ValidateToken(final String token) throws JwtException {
+    public static String ValidateToken(final String token) throws JwtException {
         try {
             var decodedToken = DecodeToken(token);
             Map header = (Map) decodedToken.get("header");
             Key signingKey = StringToKey((String) header.get("key"));
             Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token);
+            Map payload = (Map) decodedToken.get("payload");
+            return (String) payload.get("sub");
         } catch (SignatureException ex) {
             throw new JwtException((Map) Map.of(
                     "status", 401,

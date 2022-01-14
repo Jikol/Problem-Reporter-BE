@@ -21,7 +21,7 @@ public class JsonBuilder {
             target.add("token", message.get("token").toString());
         }
         if (message.get("created") != null) {
-            target.add("entitiesCreated", (Integer) message.get("created"));
+            target.add("entitiesAffected", (Integer) message.get("created"));
         }
         return target.build().toString();
     }

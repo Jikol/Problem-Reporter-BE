@@ -56,8 +56,29 @@ public class ProblemController {
         );
     }
 
-    @GetMapping("/list")
-    public Object listReportedProblems(@RequestHeader("Authorization") String token) {
-        var problems = new ProblemTM().listAllUserProblems(token);
+    @GetMapping("/list/user")
+    public Object listPersonalReportedProblems(@RequestHeader("Authorization") String token) {
+        var response = new ProblemTM().ListAllUserProblems(token);
+        if (response instanceof Map) {
+            return new ResponseEntity<String>(JsonBuilder.BuildResponseJson((Map) response),
+                    HttpStatus.valueOf((Integer) ((Map) response).get("status")));
+        }
+        if (response instanceof List) {
+            return response;
+        }
+        return null;
+    }
+
+    @GetMapping("/list/unresolved")
+    public Object listUnresolvedReportedProblems() {
+        var response = new ProblemTM().ListUnresolvedProblems();
+        if (response instanceof Map) {
+            return new ResponseEntity<String>(JsonBuilder.BuildResponseJson((Map) response),
+                    HttpStatus.valueOf((Integer) ((Map) response).get("status")));
+        }
+        if (response instanceof List) {
+            return response;
+        }
+        return null;
     }
 }

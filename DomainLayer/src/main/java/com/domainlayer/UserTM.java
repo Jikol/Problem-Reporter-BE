@@ -113,7 +113,7 @@ public class UserTM {
         }
     }
 
-    public Object listAllUsers(final String token) {
+    public Object ListAllUsers(final String token) {
         try {
             JwtToken.ValidateToken(token.replace("Bearer ", ""));
         } catch (JwtException ex) {

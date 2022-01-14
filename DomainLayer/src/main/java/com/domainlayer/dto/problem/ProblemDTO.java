@@ -5,10 +5,15 @@ import com.domainlayer.dto.SuperProblemDTO;
 import java.util.List;
 
 public class ProblemDTO extends SuperProblemDTO {
-    public ProblemDTO(String title, String summary, String configuration, String expectedBehavior, String actualBehavior, List<String> attachments) {
+    private final int id;
+
+    public ProblemDTO(int id, String title, String summary, String configuration,
+                      String expectedBehavior, String actualBehavior, List<String> attachments) {
         super(title, summary, configuration, expectedBehavior, actualBehavior, attachments);
+        this.id = id;
     }
 
+    public int getId() { return id; }
     public String getTitle() {
         return title;
     }

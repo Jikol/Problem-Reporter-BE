@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class AttachmentMapper extends AbstractRowMapper<AttachmentEntity> {
 
-    public ProblemMapper() {
+    public AttachmentMapper() {
         super(AttachmentEntity.class);
     }
 
@@ -17,12 +17,8 @@ public class AttachmentMapper extends AbstractRowMapper<AttachmentEntity> {
     protected AttachmentEntity mapRow(ResultSet rs) throws Exception {
         try {
             int id = rs.getInt("id");
-            String title = rs.getString("title");
-            String summary = rs.getString("summary");
-            String configuration = rs.getString("configuration");
-            String expectedBehavior = rs.getString("expect_behavior");
-            String actualBehavior = rs.getString("actual_behavior");
-            return new ProblemEntity(id, title, summary, configuration, expectedBehavior, actualBehavior);
+            byte[] data = rs.getBytes("data");
+            return new AttachmentEntity(id, data);
         } catch (SQLException ex) {
             throw new Exception(ex);
         }

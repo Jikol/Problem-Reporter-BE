@@ -14,6 +14,6 @@ public interface IUnitOfWork<T> {
     public int Commit(final boolean control) throws Exception;
 
     public int Insert(T entity) throws SQLException;
-    public void Update(T entity) throws SQLException;
-    public void Delete(T entity) throws SQLException;
+    public int Update(T entity) throws SQLException;
+    public int Delete(T entity) throws SQLException;
 }

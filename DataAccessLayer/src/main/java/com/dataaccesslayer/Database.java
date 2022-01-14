@@ -107,6 +107,33 @@ public class Database {
                     ex.printStackTrace();
                 }
             }
+            if (parameter.getKey().equals(byte[].class)) {
+                try {
+                    preparedStatement.setBytes((Integer) index, (byte[]) parameter.getValue());
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (parameter.getKey().equals(Boolean.class)) {
+                try {
+                    preparedStatement.setBoolean((Integer) index, (Boolean) parameter.getValue());
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (parameter.getKey().equals(java.util.Date.class)) {
+                try {
+                    java.util.Date utilDate = (java.util.Date) parameter.getValue();
+                    if (utilDate == null) {
+                        preparedStatement.setDate((Integer) index, null);
+                    } else {
+                        Date sqlDate = new Date(utilDate.getTime());
+                        preparedStatement.setDate((Integer) index, sqlDate);
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         });
         int affectedRows = preparedStatement.executeUpdate();
         if (affectedRows == 0) {
@@ -146,6 +173,27 @@ public class Database {
                         preparedStatement.setString((Integer) index, (String) parameter.getValue());
                     } catch (SQLException e) {
                         e.printStackTrace();
+                    }
+                }
+                if (parameter.getKey().equals(byte[].class)) {
+                    try {
+                        preparedStatement.setBytes((Integer) index, (byte[]) parameter.getValue());
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                if (parameter.getKey().equals(Boolean.class)) {
+                    try {
+                        preparedStatement.setBoolean((Integer) index, (Boolean) parameter.getValue());
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                if (parameter.getKey().equals(Date.class)) {
+                    try {
+                        preparedStatement.setDate((Integer) index, (Date) parameter.getValue());
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
                     }
                 }
             });

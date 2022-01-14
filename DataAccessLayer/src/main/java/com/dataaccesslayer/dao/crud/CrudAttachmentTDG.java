@@ -2,6 +2,7 @@ package com.dataaccesslayer.dao.crud;
 
 import com.dataaccesslayer.Database;
 import com.dataaccesslayer.dao.IUnitOfWork;
+import com.dataaccesslayer.dao.mapper.AttachmentMapper;
 import com.dataaccesslayer.dao.mapper.DeploymentMapper;
 import com.dataaccesslayer.entity.AttachmentEntity;
 import com.dataaccesslayer.entity.DeploymentEntity;
@@ -62,21 +63,21 @@ public class CrudAttachmentTDG implements IUnitOfWork<AttachmentEntity> {
     @Override
     public int Insert(final AttachmentEntity entity) throws SQLException {
         String query = "INSERT INTO data.attachment (data, problem_id) " +
-                "VALUES (decode(?, 'base64'), ?)";
+                "VALUES (?, ?)";
         var parameters = new HashMap<>();
-        parameters.put(1, new AbstractMap.SimpleEntry(String.class, entity.getData()));
+        parameters.put(1, new AbstractMap.SimpleEntry(byte[].class, entity.getData()));
         parameters.put(2, new AbstractMap.SimpleEntry(Integer.class, entity.getProblemEntity().getId()));
         return db.ExecutePreparedUpdate(query, parameters);
     }
 
     @Override
-    public void Update(final AttachmentEntity entity) throws SQLException {
-
+    public int Update(final AttachmentEntity entity) throws SQLException {
+        return 0;
     }
 
     @Override
-    public void Delete(final AttachmentEntity entity) throws SQLException {
-
+    public int Delete(final AttachmentEntity entity) throws SQLException {
+        return 0;
     }
 
     public List<AttachmentEntity> SelectAllById(final int idParam) throws Exception {
@@ -84,6 +85,7 @@ public class CrudAttachmentTDG implements IUnitOfWork<AttachmentEntity> {
         String query = "SELECT * FROM data.attachment WHERE problem_id = ?";
         var parameters = new HashMap<>();
         parameters.put(1, new AbstractMap.SimpleEntry(Integer.class, idParam));
+        return new AttachmentMapper().mapResultSet(db, db.ExecutePreparedSelect(query, parameters));
     }
 
     private void Register(final AttachmentEntity entity, final String operation) {

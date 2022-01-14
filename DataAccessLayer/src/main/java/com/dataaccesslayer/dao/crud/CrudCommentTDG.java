@@ -2,15 +2,14 @@ package com.dataaccesslayer.dao.crud;
 
 import com.dataaccesslayer.Database;
 import com.dataaccesslayer.dao.IUnitOfWork;
-import com.dataaccesslayer.dao.mapper.UserMapper;
-import com.dataaccesslayer.entity.ProblemEntity;
+import com.dataaccesslayer.entity.CommentEntity;
 import com.dataaccesslayer.entity.UserEntity;
 
 import java.sql.SQLException;
 import java.util.*;
 
-public class CrudUserTDG implements IUnitOfWork<UserEntity> {
-    public final Map<String, List<UserEntity>> context = new HashMap<>();
+public class CrudCommentTDG implements IUnitOfWork<CommentEntity> {
+    public final Map<String, List<CommentEntity>> context = new HashMap<>();
     private final Database db = Database.getDatabase();
     private List<Integer> insertedIds = new ArrayList<>();
 
@@ -19,17 +18,17 @@ public class CrudUserTDG implements IUnitOfWork<UserEntity> {
     }
 
     @Override
-    public void RegisterNew(final UserEntity entity) {
+    public void RegisterNew(final CommentEntity entity) {
         Register(entity, INSERT);
     }
 
     @Override
-    public void RegisterModified(final UserEntity entity) {
+    public void RegisterModified(final CommentEntity entity) {
         Register(entity, MODIFY);
     }
 
     @Override
-    public void RegisterDeleted(final UserEntity entity) {
+    public void RegisterDeleted(final CommentEntity entity) {
         Register(entity, DELETE);
     }
 
@@ -64,41 +63,27 @@ public class CrudUserTDG implements IUnitOfWork<UserEntity> {
     }
 
     @Override
-    public int Insert(final UserEntity userEntity) throws SQLException {
-        String query = "INSERT INTO data.user (email, passwd, name, surname) VALUES (?, ?, ?, ?)";
+    public int Insert(final CommentEntity commentEntity) throws SQLException {
+        String query = "INSERT INTO data.comment (content, created_date, edited_date, problem_id) VALUES (?, ?, ?, ?)";
         var parameters = new HashMap<>();
-        parameters.put(1, new AbstractMap.SimpleEntry(String.class, userEntity.getEmail()));
-        parameters.put(2, new AbstractMap.SimpleEntry(String.class, userEntity.getPasswd()));
-        parameters.put(3, new AbstractMap.SimpleEntry(String.class, userEntity.getName()));
-        parameters.put(4, new AbstractMap.SimpleEntry(String.class, userEntity.getSurname()));
+        parameters.put(1, new AbstractMap.SimpleEntry(String.class, commentEntity.getContent()));
+        parameters.put(2, new AbstractMap.SimpleEntry(Date.class, commentEntity.getCreatedDate()));
+        parameters.put(3, new AbstractMap.SimpleEntry(Date.class, commentEntity.getEditedDate()));
+        parameters.put(4, new AbstractMap.SimpleEntry(Integer.class, commentEntity.getProblemEntity().getId()));
         return db.ExecutePreparedUpdate(query, parameters);
     }
 
     @Override
-    public int Update(final UserEntity userEntity) {
+    public int Update(final CommentEntity userEntity) {
         return 0;
     }
 
     @Override
-    public int Delete(final UserEntity userEntity) {
+    public int Delete(final CommentEntity userEntity) {
         return 0;
     }
 
-    public UserEntity SelectByEmail(final String emailParam) throws Exception {
-        db.BeginConnection();
-        String query = "SELECT * FROM data.user WHERE email LIKE ?";
-        var parameters = new HashMap<>();
-        parameters.put(1, new AbstractMap.SimpleEntry(String.class, emailParam));
-        return new UserMapper().mapResultSingle(db, db.ExecutePreparedSelect(query, parameters));
-    }
-
-    public List<UserEntity> SelectAll() throws Exception {
-        db.BeginConnection();
-        String query = "SELECT * FROM data.user";
-        return new UserMapper().mapResultSet(db, db.ExecuteSelect(query));
-    }
-
-    private void Register(final UserEntity entity, final String operation) {
+    private void Register(final CommentEntity entity, final String operation) {
         List entitiesToPersistence = context.get(operation);
         if (entitiesToPersistence == null) {
             entitiesToPersistence = new ArrayList();
@@ -111,7 +96,7 @@ public class CrudUserTDG implements IUnitOfWork<UserEntity> {
         var objectsToBePersisted = context.get(INSERT);
         List<Integer> insertedIds = new ArrayList<>();
         int objectsInserted = 0;
-        for (UserEntity entity : objectsToBePersisted) {
+        for (CommentEntity entity : objectsToBePersisted) {
             insertedIds.add(Insert(entity));
             objectsInserted++;
         }
@@ -121,7 +106,7 @@ public class CrudUserTDG implements IUnitOfWork<UserEntity> {
     private int CommitModify() throws SQLException {
         var objectsToBePersisted = context.get(MODIFY);
         int objectsInserted = 0;
-        for (UserEntity entity : objectsToBePersisted) {
+        for (CommentEntity entity : objectsToBePersisted) {
             Update(entity);
             objectsInserted++;
         }
@@ -131,7 +116,7 @@ public class CrudUserTDG implements IUnitOfWork<UserEntity> {
     private int CommitDelete() throws SQLException {
         var objectsToBePersisted = context.get(DELETE);
         int objectsInserted = 0;
-        for (UserEntity entity : objectsToBePersisted) {
+        for (CommentEntity entity : objectsToBePersisted) {
             Delete(entity);
             objectsInserted++;
         }
